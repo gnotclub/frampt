@@ -10,5 +10,9 @@ module Frampt
     get "/" do
       erb :index
     end
+
+    not_found do
+      "not sure where that is...."
+    end
   end
 end
