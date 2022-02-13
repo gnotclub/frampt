@@ -10,7 +10,6 @@ capybara-*.html
 /db/*.sqlite3
 /db/*.sqlite3-journal
 /db/*.sqlite3-[0-9]*
-/public/system
 /coverage/
 /spec/tmp
 *.orig
@@ -59,10 +58,6 @@ bower.json
 # Ignore node_modules
 node_modules/
 
-# Ignore precompiled javascript packs
-/public/packs
-/public/packs-test
-/public/assets
 
 # Ignore yarn files
 /yarn-error.log
@@ -72,7 +67,6 @@ yarn-debug.log*
 # Ignore uploaded files in development
 /storage/*
 !/storage/.keep
-/public/uploads
 
 ### Ruby ###
 *.gem
@@ -126,3 +120,5 @@ build-iPhoneSimulator/
 # .rubocop-https?--*
 
 # End of https://www.toptal.com/developers/gitignore/api/ruby,rails
+
+public/*.*
