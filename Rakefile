@@ -3,6 +3,7 @@
 require "logger"
 require "bundler/gem_tasks"
 require "rspec/core/rake_task"
+require "active_record"
 
 require_relative "lib/frampt/const"
 
@@ -13,6 +14,8 @@ RSpec::Core::RakeTask.new(:spec)
 require "rubocop/rake_task"
 
 RuboCop::RakeTask.new
+
+include ActiveRecord::Tasks
 
 task default: %i[spec rubocop]
 
