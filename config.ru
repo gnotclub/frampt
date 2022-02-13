@@ -4,7 +4,7 @@ require "rack/protection"
 require_relative "lib/frampt"
 
 # fetch stuff from .env if we are running locally
-unless ENV.fetch("APP_ENV", "development") == "production"
+unless Frampt::Const::PRODUCTION
   require "dotenv/load"
   require "debug"
 end
