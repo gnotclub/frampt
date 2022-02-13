@@ -3,11 +3,14 @@
 require "sinatra/base"
 require "digest"
 require "active_record"
+require "active_support"
 require "pg"
 require "yaml"
 require "erb"
 
 require_relative "frampt/version"
+require_relative "../db/models/Upload"
+require_relative "../db/models/Uploader"
 
 module Frampt
   class Error < StandardError; end
@@ -27,7 +30,6 @@ module Frampt
     end
 
     post "/upload" do
-      debugger
       uploaded_filename = params[:file][:filename]
       uploaded_file = params[:file][:tempfile]
 
@@ -37,8 +39,8 @@ module Frampt
                            .sample(ENV.fetch("FILENAME_SIZE", 7))
                            .join
 
-      ext = File.extname(uploaded_file.path)
-      filename = "#{hash}#{ext}"
+      ext = File.extname(uploaded_file.path).delete(".")
+      filename = "#{hash}.#{ext}"
 
       # reset seek back to 0 to prep for actual upload
       uploaded_file.seek 0
@@ -47,17 +49,17 @@ module Frampt
         file.write(uploaded_file.read)
       end
 
-      user = Uploader.find_or_create(ip: request.ip, session: session[:session_id])
+      user = Uploader.find_or_create_by(ip: request.ip, session: session[:session_id].to_s)
 
       Upload.create(name: hash, filetype: ext, uploader: user)
 
       redirect to("/#{filename}")
     end
 
-    get "/:filename" do
-      filename = params[:filename]
+    get "/*.*" do |filename, ext|
+      upload = Upload.find_by(name: filename, filetype: ext)
 
-      send_file "./public/#{filename}"
+      upload.present? ? send_file("./public/#{upload.filename}") : redirect(to(not_found))
     end
 
     not_found do
