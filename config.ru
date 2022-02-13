@@ -2,6 +2,7 @@
 
 require "rack/protection"
 require_relative "lib/frampt"
+require_relative "lib/frampt/const"
 
 # fetch stuff from .env if we are running locally
 unless Frampt::Const::PRODUCTION

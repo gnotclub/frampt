@@ -1,19 +1,33 @@
 # frozen_string_literal: true
 
-require_relative "frampt/version"
 require "sinatra/base"
 require "digest"
+require "active_record"
+require "pg"
+require "yaml"
+require "erb"
+
+require_relative "frampt/version"
 
 module Frampt
   class Error < StandardError; end
 
   # Frampt App
   class App < Sinatra::Application
+    configure do
+      APP_ENV = ENV.fetch("APP_ENV", "developemnt")
+      ActiveRecord.schema_format = :sql
+      ActiveRecord::Base.logger = Logger.new($stdout)
+      ActiveRecord::Base.configurations = YAML.load(ERB.new(File.read("config/database.yml")).result, aliases: true)
+      ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations.find_db_config(APP_ENV))
+    end
+
     get "/" do
       erb :index
     end
 
     post "/upload" do
+      debugger
       uploaded_filename = params[:file][:filename]
       uploaded_file = params[:file][:tempfile]
 
@@ -32,6 +46,10 @@ module Frampt
       File.open("./public/#{filename}", "wb") do |file|
         file.write(uploaded_file.read)
       end
+
+      user = Uploader.find_or_create(ip: request.ip, session: session[:session_id])
+
+      Upload.create(name: hash, filetype: ext, uploader: user)
 
       redirect to("/#{filename}")
     end

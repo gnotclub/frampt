@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "sequel"
+require "logger"
 require "bundler/gem_tasks"
 require "rspec/core/rake_task"
 
@@ -16,18 +16,20 @@ RuboCop::RakeTask.new
 
 task default: %i[spec rubocop]
 
-namespace :db do
-  Sequel.extension :migration
+task :environment do
+  # https://api.rubyonrails.org/classes/ActiveRecord/Tasks/DatabaseTasks.html
+  RAKE_PATH = File.expand_path('.')
+  RAKE_ENV  = ENV.fetch('APP_ENV', 'development')
+  ENV['RAILS_ENV'] = RAKE_ENV
 
-  task :migrate do
-    Sequel.connect(ENV.fetch("DATABASE_CONNECTION_STRING")) do |db|
-      Sequel::Migrator.run(db, "./db/migrations")
-    end
-  end
+  Bundler.require :default, RAKE_ENV
 
-  task :version do
-    Sequel.connect(ENV.fetch("DATABASE_CONNECTION_STRING")) do |db|
-      puts db.tables.include?(:schema_info) ? db[:schema_info].first[:version] : 0
-    end
-  end
+  ActiveRecord::Tasks::DatabaseTasks.database_configuration = ActiveRecord::Base.configurations
+  ActiveRecord::Tasks::DatabaseTasks.root             = RAKE_PATH
+  ActiveRecord::Tasks::DatabaseTasks.env              = RAKE_ENV
+  ActiveRecord::Tasks::DatabaseTasks.db_dir           = 'db'
+  ActiveRecord::Tasks::DatabaseTasks.migrations_paths = ['db/migrations']
+  ActiveRecord::Tasks::DatabaseTasks.seed_loader      = OpenStruct.new(load_seed: nil)
 end
+
+load "active_record/railties/databases.rake"
