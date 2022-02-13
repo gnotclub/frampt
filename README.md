@@ -3,6 +3,12 @@
 File uploader writtin Ruby. Kind of like [pomf](https://github.com/pomf/pomf)
 or [uguu](https://github.com/nokonoko/uguu)
 
+### todo
+
+- some bot prevention mechanism (recaptcha?)
+- find a way to prevent bad stuff from being uploaded
+- make sure JSON api works nicely for people
+
 ## Installation
 
 Add this line to your application's Gemfile:
