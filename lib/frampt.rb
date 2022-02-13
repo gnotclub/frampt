@@ -14,20 +14,38 @@ module Frampt
     end
 
     post "/upload" do
-      filename = params[:file][:filename]
-      file = params[:file][:tempfile]
+      uploaded_filename = params[:file][:filename]
+      uploaded_file = params[:file][:tempfile]
+
+      debugger
 
       # patent pending
-      hash = Digest::SHA256.hexdigest(file.read + Time.now.to_s)
+      hash = Digest::SHA256.hexdigest(uploaded_file.read + Time.now.to_s)
                            .split(//)
                            .sample(ENV.fetch("FILENAME_SIZE", 7))
                            .join
 
-      redirect back # TODO: redirect to uploaded file
+      ext = File.extname(uploaded_file.path)
+      filename = "#{hash}#{ext}"
+
+      # reset seek back to 0 to prep for actual upload
+      uploaded_file.seek 0
+
+      File.open("./public/#{filename}", "wb") do |file|
+        file.write(uploaded_file.read)
+      end
+
+      redirect to("/#{filename}")
     end
 
-    not_found do
-      "not sure where that is...."
+    get "/:filename" do
+      filename = params[:filename]
+
+      send_file "./public/#{filename}"
     end
+
+    # not_found do
+    #   "not sure where that is...."
+    # end
   end
 end
