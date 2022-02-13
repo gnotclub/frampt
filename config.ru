@@ -6,6 +6,7 @@ require_relative "lib/frampt"
 # fetch stuff from .env if we are running locally
 unless ENV.fetch("APP_ENV", "development") == "production"
   require "dotenv/load"
+  require "debug"
 end
 
 # use cookies for session data
