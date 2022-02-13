@@ -21,7 +21,13 @@ Or install it yourself as:
 
 ## Usage
 
-Set a `SESSION_COOKIE_SECRET` env var for Rack and run `./bin/serve`
+Frampt uses [ActiveRecord](https://github.com/rails/rails/tree/main/activerecord) to store
+information on what was uploaded and by who, and uses [sinatra](http://sinatrarb.com/)
+to send HTTP messages. You can configure your database by modifying `config/database.yml`
+and then running `rake db:setup`. Then, run `./bin/serve` to start rack. Frampt uses
+the [Puma](https://puma.io/) HTTP server locally, because she is a cat.
+
+Environment variables you should set are define din `.env.example`
 
 ## Development
 
