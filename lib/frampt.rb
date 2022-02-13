@@ -17,8 +17,6 @@ module Frampt
       uploaded_filename = params[:file][:filename]
       uploaded_file = params[:file][:tempfile]
 
-      debugger
-
       # patent pending
       hash = Digest::SHA256.hexdigest(uploaded_file.read + Time.now.to_s)
                            .split(//)
@@ -44,8 +42,8 @@ module Frampt
       send_file "./public/#{filename}"
     end
 
-    # not_found do
-    #   "not sure where that is...."
-    # end
+    not_found do
+      "not sure where that is...."
+    end
   end
 end
