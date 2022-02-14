@@ -18,11 +18,12 @@ module Frampt
   # Frampt App
   class App < Sinatra::Application
     configure do
-      APP_ENV = ENV.fetch("APP_ENV", "developemnt")
+      app_env = ENV.fetch("APP_ENV", "developemnt")
       ActiveRecord.schema_format = :sql
       ActiveRecord::Base.logger = Logger.new($stdout)
-      ActiveRecord::Base.configurations = YAML.load(ERB.new(File.read("config/database.yml")).result, aliases: true)
-      ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations.find_db_config(APP_ENV))
+      ActiveRecord::Base.configurations = YAML.safe_load(ERB.new(File.read("config/database.yml")).result,
+                                                         aliases: true)
+      ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations.find_db_config(app_env))
     end
 
     get "/" do

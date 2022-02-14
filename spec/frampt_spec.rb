@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
+require_relative "spec_helper"
+
 RSpec.describe Frampt do
   it "has a version number" do
     expect(Frampt::VERSION).not_to be nil
-  end
-
-  it "does something useful" do
-    expect(false).to eq(true)
   end
 end

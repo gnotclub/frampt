@@ -10,3 +10,7 @@ development:
   <<: *default
   database: frampt_development
 
+test:
+  <<: *default
+  database: frampt_test
+

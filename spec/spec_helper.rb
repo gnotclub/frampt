@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require "dotenv"
+Dotenv.load ".env.test"
+
 require "frampt"
 
 RSpec.configure do |config|

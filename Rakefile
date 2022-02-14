@@ -15,23 +15,22 @@ require "rubocop/rake_task"
 
 RuboCop::RakeTask.new
 
-include ActiveRecord::Tasks
-
 task default: %i[spec rubocop]
 
 task :environment do
+  include ActiveRecord::Tasks
   # https://api.rubyonrails.org/classes/ActiveRecord/Tasks/DatabaseTasks.html
-  RAKE_PATH = File.expand_path('.')
-  RAKE_ENV  = ENV.fetch('APP_ENV', 'development')
-  ENV['RAILS_ENV'] = RAKE_ENV
+  rake_path = File.expand_path(".")
+  rake_env  = ENV.fetch("APP_ENV", "development")
+  ENV["RAILS_ENV"] = rake_env
 
-  Bundler.require :default, RAKE_ENV
+  Bundler.require :default, rake_env
 
   ActiveRecord::Tasks::DatabaseTasks.database_configuration = ActiveRecord::Base.configurations
-  ActiveRecord::Tasks::DatabaseTasks.root             = RAKE_PATH
-  ActiveRecord::Tasks::DatabaseTasks.env              = RAKE_ENV
-  ActiveRecord::Tasks::DatabaseTasks.db_dir           = 'db'
-  ActiveRecord::Tasks::DatabaseTasks.migrations_paths = ['db/migrations']
+  ActiveRecord::Tasks::DatabaseTasks.root             = rake_path
+  ActiveRecord::Tasks::DatabaseTasks.env              = rake_env
+  ActiveRecord::Tasks::DatabaseTasks.db_dir           = "db"
+  ActiveRecord::Tasks::DatabaseTasks.migrations_paths = ["db/migrations"]
   ActiveRecord::Tasks::DatabaseTasks.seed_loader      = OpenStruct.new(load_seed: nil)
 end
 
