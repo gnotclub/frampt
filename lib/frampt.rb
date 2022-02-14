@@ -30,7 +30,6 @@ module Frampt
     end
 
     post "/upload" do
-      uploaded_filename = params[:file][:filename]
       uploaded_file = params[:file][:tempfile]
 
       # patent pending
@@ -57,6 +56,9 @@ module Frampt
     end
 
     get "/*.*" do |filename, ext|
+      # lul
+      return redirect(to(not_found)) if filename == "favicon" && ext == "ico"
+
       upload = Upload.find_by(name: filename, filetype: ext)
 
       upload.present? ? send_file("./public/#{upload.filename}") : redirect(to(not_found))
