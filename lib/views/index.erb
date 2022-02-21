@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf_token" content="<%= env['rack.session'][:csrf] %>">
     <title>
       frampt - gnot.club
     </title>
@@ -17,19 +18,37 @@
 
         static FILE_NAME = 0;
         static FILE_PROGRESS = 1;
+        csrfToken = null;
 
-        upload(event) {
+        connect() {
+          this.csrfToken = document.querySelector('meta[name="csrf_token"]').content;
+        }
+
+        async uploadFile(file, progressBar) {
+          // TIL fetch doesnt handle ProgressEvents :((((((
+          let request = new XMLHttpRequest();
+          request.open("POST", "/upload");
+          request.setRequestHeader("x-csrf-token", this.csrfToken);
+
+
+          request.send();
+        }
+
+        handleUpload(event) {
           var files = this.fileInputTarget.files;
 
           // TIL FileList doesn't use Array.prototype....
           [...files].forEach((file) => {
             var progress = document.createElement("progress");
-            progress.classList.add("progress");
-            progress.classList.add("is-primary");
             var tableRow = this.uploadTableTarget.insertRow();
-            console.log({progress: progress.outerHTML});
             var fileNameCell = tableRow.insertCell(this.FILE_NAME);
             var progressCell = tableRow.insertCell(this.FILE_PROGRESS);
+
+            // set up progress element with some stuff
+            progress.setAttribute("max", "100");
+            progress.setAttribute("value", "0");
+            progress.classList.add("progress");
+            progress.classList.add("is-primary");
 
             fileNameCell.innerText = file.name;
             progressCell.innerHTML = progress.outerHTML;
@@ -52,7 +71,7 @@
               type="file"
               name="file"
               multiple
-              data-action="change->upload#upload"
+              data-action="change->upload#handleUpload"
               data-upload-target="fileInput"
             >
               <span class="file-cta">
