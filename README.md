@@ -33,7 +33,7 @@ to send HTTP messages. You can configure your database by modifying `config/data
 and then running `rake db:setup`. Then, run `./bin/serve` to start rack. Frampt uses
 the [Puma](https://puma.io/) HTTP server locally, because she is a cat.
 
-Environment variables you should set are define din `.env.example`
+Environment variables you should set are defined in `.env.example`
 
 ## Development
 
