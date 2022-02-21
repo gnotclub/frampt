@@ -12,9 +12,28 @@
 
       window.Stimulus = Application.start();
 
-      Stimulus.register("upload", class extends Controller {
-        connect() {
-          console.log("bars");
+      Stimulus.register("upload", class UploadController extends Controller {
+        static targets = ["uploadTable", "fileInput"];
+
+        static FILE_NAME = 0;
+        static FILE_PROGRESS = 1;
+
+        upload(event) {
+          var files = this.fileInputTarget.files;
+
+          // TIL FileList doesn't use Array.prototype....
+          [...files].forEach((file) => {
+            var progress = document.createElement("progress");
+            progress.classList.add("progress");
+            progress.classList.add("is-primary");
+            var tableRow = this.uploadTableTarget.insertRow();
+            console.log({progress: progress.outerHTML});
+            var fileNameCell = tableRow.insertCell(this.FILE_NAME);
+            var progressCell = tableRow.insertCell(this.FILE_PROGRESS);
+
+            fileNameCell.innerText = file.name;
+            progressCell.innerHTML = progress.outerHTML;
+          });
         }
       });
     </script>
@@ -25,32 +44,36 @@
         <h1 class="title">
           frampt
         </h1>
-        <p class="subtitle">
-        give me titanite dude
-        </p>
         <div data-controller="upload">
-          <form action="/upload" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="authenticity_token" value="<%= env['rack.session'][:csrf] %>" />
-            <div class="file">
-              <label class="file-label">
-                <input class="file-input" type="file" name="file">
-                <span class="file-cta">
-                  <span class="file-label">
-                    Choose a file…
-                  </span>
+          <div class="file">
+            <label class="file-label">
+              <input
+              class="file-input"
+              type="file"
+              name="file"
+              multiple
+              data-action="change->upload#upload"
+              data-upload-target="fileInput"
+            >
+              <span class="file-cta">
+                <span class="file-label">
+                  Give Frampt titanite
                 </span>
-              </label>
-            </div>
-            <div class="field">
-              <div class="control">
-                <button class="button is-primary">
-                  Upload
-                </button>
-              </div>
-            </div>
-          </form>
-          <ul id="upload-list">
-          </ul>
+              </span>
+            </label>
+          </div>
+          <div class="content">
+            <table data-upload-target="uploadTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Progress</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>

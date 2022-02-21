@@ -1,10 +1,14 @@
 # Frampt
 
 File uploader writtin Ruby. Kind of like [pomf](https://github.com/pomf/pomf)
-or [uguu](https://github.com/nokonoko/uguu)
+or [uguu](https://github.com/nokonoko/uguu).
+
+I wrote this to teach myself [Sinatra](http://sinatrarb.com) and
+[Stimulus](https://stimulus.hotwired.dev/) so code may be not good hehe.
 
 ### todo
 
+- allow multiple uploads and give progress indications (maybe using XHR progressEvent?)
 - some bot prevention mechanism (recaptcha?)
 - find a way to prevent bad stuff from being uploaded
 - make sure JSON api works nicely for people
