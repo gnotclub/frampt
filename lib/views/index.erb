@@ -18,20 +18,32 @@
 
         static FILE_NAME = 0;
         static FILE_PROGRESS = 1;
+
         csrfToken = null;
+        fileNames = {};
 
         connect() {
           this.csrfToken = document.querySelector('meta[name="csrf_token"]').content;
         }
 
-        async uploadFile(file, progressBar) {
+        handleFileUploadSuccess(event) {
+          var xhr = event.target;
+
+          var response = xhr.response;
+          // todo: replace progress bar with response str
+        }
+
+        uploadFile(file, progressBar) {
           // TIL fetch doesnt handle ProgressEvents :((((((
           let request = new XMLHttpRequest();
           request.open("POST", "/upload");
           request.setRequestHeader("x-csrf-token", this.csrfToken);
+          request.addEventListener("load", this.handleFileUploadSuccess);
+          request.addEventListener("progress", this.handleFileUploadProgress);
 
-
-          request.send();
+          var formData = new FormData();
+          formData.append("file", file);
+          request.send(formData);
         }
 
         handleUpload(event) {
@@ -41,6 +53,7 @@
           [...files].forEach((file) => {
             var progress = document.createElement("progress");
             var tableRow = this.uploadTableTarget.insertRow();
+
             var fileNameCell = tableRow.insertCell(this.FILE_NAME);
             var progressCell = tableRow.insertCell(this.FILE_PROGRESS);
 
@@ -50,8 +63,26 @@
             progress.classList.add("progress");
             progress.classList.add("is-primary");
 
-            fileNameCell.innerText = file.name;
+            // make sure to handle duplicate table names
+            // (todo: is this why we see the bug of two files with the same
+            // name not working?)
+            var fileName = file.name;
+            var existingTableRow = Array.from(document.querySelectorAll("tr")).find(tableRow => {
+              var currentFileName = tableRow.cells[0].innerText;
+              return (fileName === currentFileName)
+            });
+
+            if(existingTableRow !== undefined) {
+              this.fileNames[fileName]++
+              fileName = `${fileName} (${this.fileNames[fileName] + 1})`
+            } else {
+              this.fileNames[fileName] = 0
+            }
+
+            fileNameCell.innerText = fileName;
             progressCell.innerHTML = progress.outerHTML;
+
+            this.uploadFile(file, progress);
           });
         }
       });

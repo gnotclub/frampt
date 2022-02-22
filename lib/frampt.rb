@@ -53,7 +53,7 @@ module Frampt
 
       Upload.create(name: hash, filetype: ext, uploader: user)
 
-      redirect to("/#{filename}")
+      to("/#{filename}")
     end
 
     get "/*.*" do |filename, ext|
