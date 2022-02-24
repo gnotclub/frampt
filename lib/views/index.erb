@@ -30,16 +30,24 @@
           var xhr = event.target;
 
           var response = xhr.response;
-          // todo: replace progress bar with response str
+          var progressBar = xhr["progressBar"];
+          var progressCell = xhr["progressCell"];
+          var hyperlink = document.createElement("a");
+          var linktext = document.createTextNode(response);
+          hyperlink.appendChild(linktext);
+          hyperlink.href = response;
+          progressCell.innerHTML = hyperlink.outerHTML;
         }
 
-        uploadFile(file, progressBar) {
+        uploadFile(file, progressBar, progressCell) {
           // TIL fetch doesnt handle ProgressEvents :((((((
           let request = new XMLHttpRequest();
           request.open("POST", "/upload");
           request.setRequestHeader("x-csrf-token", this.csrfToken);
           request.addEventListener("load", this.handleFileUploadSuccess);
           request.addEventListener("progress", this.handleFileUploadProgress);
+          request["progressBar"] = progressBar;
+          request["progressCell"] = progressCell;
 
           var formData = new FormData();
           formData.append("file", file);
@@ -82,7 +90,7 @@
             fileNameCell.innerText = fileName;
             progressCell.innerHTML = progress.outerHTML;
 
-            this.uploadFile(file, progress);
+            this.uploadFile(file, progress, progressCell);
           });
         }
       });
