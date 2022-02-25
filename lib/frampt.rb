@@ -7,10 +7,13 @@ require "active_support"
 require "pg"
 require "yaml"
 require "erb"
+require "jwt"
 
 require_relative "frampt/version"
 require_relative "../db/models/Upload"
 require_relative "../db/models/Uploader"
+
+JWT_TOKEN_HMAC = ENV.fetch("TOKEN_HMAC")
 
 module Frampt
   class Error < StandardError; end
@@ -28,6 +31,13 @@ module Frampt
 
     get "/" do
       erb :index
+    end
+
+    post "/invite" do
+      payload = {}
+      new_token = JWT.encode(payload, JWT_TOKEN_HMAC, true, algorithm: "HS512")
+
+      new_token
     end
 
     post "/upload" do
