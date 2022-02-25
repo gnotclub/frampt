@@ -28,10 +28,11 @@
 
         handleFileUploadSuccess(event) {
           var xhr = event.target;
+          var fileName = xhr["fileName"];
 
           var response = xhr.response;
-          var progressBar = xhr["progressBar"];
-          var progressCell = xhr["progressCell"];
+          var progressBar = document.getElementById(`progress-bar-${fileName}`);
+          var progressCell = document.getElementById(`progress-cell-${fileName}`);
           var hyperlink = document.createElement("a");
           var linktext = document.createTextNode(response);
           hyperlink.appendChild(linktext);
@@ -39,15 +40,27 @@
           progressCell.innerHTML = hyperlink.outerHTML;
         }
 
-        uploadFile(file, progressBar, progressCell) {
+        handleFileUploadProgress(event) {
+          var xhr = event.target;
+          var fileName = xhr["fileName"];
+          var progressBar = document.getElementById(`progress-bar-${fileName}`);
+
+          if (event.lengthComputable === false)
+            return;
+
+          var progressPercent = Math.floor((event.loaded / event.total) * 100);
+          progressBar.setAttribute("value", progressPercent.toString());
+        }
+
+        uploadFile(file, fileName) {
           // TIL fetch doesnt handle ProgressEvents :((((((
           let request = new XMLHttpRequest();
           request.open("POST", "/upload");
           request.setRequestHeader("x-csrf-token", this.csrfToken);
           request.addEventListener("load", this.handleFileUploadSuccess);
-          request.addEventListener("progress", this.handleFileUploadProgress);
-          request["progressBar"] = progressBar;
-          request["progressCell"] = progressCell;
+          request.upload.onprogress = this.handleFileUploadProgress;
+          request["fileName"] = fileName;
+          request.upload["fileName"] = fileName;
 
           var formData = new FormData();
           formData.append("file", file);
@@ -87,10 +100,12 @@
               this.fileNames[fileName] = 0
             }
 
+            progress.id = `progress-bar-${fileName}`;
+            progressCell.id = `progress-cell-${fileName}`;
             fileNameCell.innerText = fileName;
             progressCell.innerHTML = progress.outerHTML;
 
-            this.uploadFile(file, progress, progressCell);
+            this.uploadFile(file, fileName);
           });
         }
       });
