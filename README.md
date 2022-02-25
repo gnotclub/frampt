@@ -8,7 +8,6 @@ I wrote this to teach myself [Sinatra](http://sinatrarb.com) and
 
 ### todo
 
-- allow multiple uploads and give progress indications (maybe using XHR progressEvent?)
 - some bot prevention mechanism (recaptcha?)
 - find a way to prevent bad stuff from being uploaded
 - make sure JSON api works nicely for people
