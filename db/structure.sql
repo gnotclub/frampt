@@ -42,6 +42,19 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tokens (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    token character varying,
+    invitee_id uuid,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: uploaders; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -85,6 +98,14 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: tokens tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tokens
+    ADD CONSTRAINT tokens_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: uploaders uploaders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -98,6 +119,13 @@ ALTER TABLE ONLY public.uploaders
 
 ALTER TABLE ONLY public.uploads
     ADD CONSTRAINT uploads_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_tokens_on_invitee_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_tokens_on_invitee_id ON public.tokens USING btree (invitee_id);
 
 
 --
@@ -122,6 +150,7 @@ SET search_path TO public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('0'),
-('1');
+('1'),
+('2');
 
 
