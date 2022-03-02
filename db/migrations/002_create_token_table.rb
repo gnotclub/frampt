@@ -6,6 +6,7 @@ class CreateTokenTable < ActiveRecord::Migration[7.0]
     create_table :tokens, id: :uuid do |table|
       table.string :token
       table.references :invitee, type: :uuid, index: true, null: true
+      table.references :uploader, type: :uuid, index: true, null: false
 
       table.timestamps
     end

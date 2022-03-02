@@ -49,6 +49,7 @@ CREATE TABLE public.tokens (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     token character varying,
     invitee_id uuid,
+    uploader_id uuid NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -126,6 +127,13 @@ ALTER TABLE ONLY public.uploads
 --
 
 CREATE INDEX index_tokens_on_invitee_id ON public.tokens USING btree (invitee_id);
+
+
+--
+-- Name: index_tokens_on_uploader_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_tokens_on_uploader_id ON public.tokens USING btree (uploader_id);
 
 
 --

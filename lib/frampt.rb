@@ -41,8 +41,12 @@ module Frampt
     end
 
     post "/invite" do
+      jwt = request.env["HTTP_AUTHORIZATION"].split(" ").last
       payload = {}
       new_token = JWT.encode(payload, JWT_TOKEN_HMAC, "HS512")
+      current_user = Uploader.find_by(ip: request.ip, session: session[:session_id].to_s)
+
+      invitee = Upload.create(token: new_token, inviter: current_user)
 
       new_token
     end
