@@ -3,7 +3,6 @@
 require "rack/protection"
 require_relative "lib/frampt"
 require_relative "lib/frampt/const"
-require_relative "lib/invitable_token"
 
 # fetch stuff from .env if we are running locally
 unless Frampt::Const::PRODUCTION
@@ -32,8 +31,5 @@ use Rack::Protection::CookieTossing
 
 # protocol downgrade attack and cookie hijacks
 use Rack::Protection::StrictTransport
-
-# use invitable token too hehe
-use InvitableToken
 
 run Frampt::App

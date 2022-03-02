@@ -14,7 +14,7 @@
       window.Stimulus = Application.start();
 
       Stimulus.register("upload", class UploadController extends Controller {
-        static targets = ["uploadTable", "fileInput"];
+        static targets = ["uploadTable", "fileInput", "tokenInput"];
 
         static FILE_NAME = 0;
         static FILE_PROGRESS = 1;
@@ -57,6 +57,7 @@
           let request = new XMLHttpRequest();
           request.open("POST", "/upload");
           request.setRequestHeader("x-csrf-token", this.csrfToken);
+          request.setRequestHeader("Authorization", `Bearer ${this.tokenInputTarget.value}`);
           request.addEventListener("load", this.handleFileUploadSuccess);
           request.upload.onprogress = this.handleFileUploadProgress;
           request["fileName"] = fileName;
@@ -118,22 +119,29 @@
           frampt
         </h1>
         <div data-controller="upload">
-          <div class="file">
-            <label class="file-label">
-              <input
-              class="file-input"
-              type="file"
-              name="file"
-              multiple
-              data-action="change->upload#handleUpload"
-              data-upload-target="fileInput"
-            >
-              <span class="file-cta">
-                <span class="file-label">
-                  Give Frampt titanite
+          <div class="columns">
+            <div class="file column is-one-fifth is-flex is-justify-content-center is-align-items-center">
+              <label class="file-label">
+                <input
+                class="file-input"
+                type="file"
+                name="file"
+                multiple
+                data-action="change->upload#handleUpload"
+                data-upload-target="fileInput"
+                >
+                <span class="file-cta">
+                  <span class="file-label">
+                    Give Frampt titanite
+                  </span>
                 </span>
-              </span>
-            </label>
+              </label>
+            </div>
+            <div class="field column is-flex is-align-items-center">
+              <div class="control is-flex-grow-5">
+                <input class="input" type="text" placeholder="Token" data-upload-target="tokenInput" />
+              </div>
+            </div>
           </div>
           <div class="content">
             <table data-upload-target="uploadTable">

@@ -29,13 +29,20 @@ module Frampt
       ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations.find_db_config(app_env))
     end
 
+    before %r{/(upload|invite)} do
+      jwt = request.env["HTTP_AUTHORIZATION"].split(" ").last
+      JWT.decode(jwt, JWT_TOKEN_HMAC, true, algorithm: "HS512")
+    rescue JWT::DecodeError
+      halt 401
+    end
+
     get "/" do
       erb :index
     end
 
     post "/invite" do
       payload = {}
-      new_token = JWT.encode(payload, JWT_TOKEN_HMAC, true, algorithm: "HS512")
+      new_token = JWT.encode(payload, JWT_TOKEN_HMAC, "HS512")
 
       new_token
     end
