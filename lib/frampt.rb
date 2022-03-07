@@ -43,16 +43,17 @@ module Frampt
     post "/invite" do
       jwt = request.env["HTTP_AUTHORIZATION"].split(" ").last
       payload = {}
-      new_token = JWT.encode(payload, JWT_TOKEN_HMAC, "HS512")
-      current_user = Uploader.find_by(ip: request.ip, session: session[:session_id].to_s)
+      new_token = Token.create(token: JWT.encode(payload, JWT_TOKEN_HMAC, "HS512"))
+      current_user = Uploader.joins(:token).find_by("tokens.token = ?", jwt)
 
-      invitee = Upload.create(token: new_token, inviter: current_user)
+      current_user.invitees.create(token: new_token)
 
       new_token
     end
 
     post "/upload" do
       uploaded_file = params[:file][:tempfile]
+      jwt = request.env["HTTP_AUTHORIZATION"].split(" ").last
 
       # patent pending
       hash = Digest::SHA256.hexdigest(uploaded_file.read + Time.now.to_s)
@@ -70,7 +71,7 @@ module Frampt
         file.write(uploaded_file.read)
       end
 
-      user = Uploader.find_or_create_by(ip: request.ip, session: session[:session_id].to_s)
+      user = Uploader.joins(:token).find_by("tokens.token = ?", jwt)
 
       Upload.create(name: hash, filetype: ext, uploader: user)
 
